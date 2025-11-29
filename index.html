@@ -72,14 +72,7 @@
       letter-spacing: 4px;
       text-transform: uppercase;
       margin-bottom: 8px;
-      opacity: 0.8;
-    }
-
-    .subtitle {
-      font-size: 13px;
-      max-width: 90%;
-      margin-bottom: 22px;
-      opacity: 0.9;
+      opacity: 0.85;
     }
 
     .btn {
@@ -88,7 +81,7 @@
       border-radius: 999px;
       padding: 10px 26px;
       font-size: 15px;
-      margin: 6px 0;
+      margin: 10px 0 4px;
       border: none;
       cursor: pointer;
       font-weight: 600;
@@ -115,103 +108,8 @@
 
     .score-box {
       font-size: 13px;
-      margin-top: 10px;
+      margin-top: 8px;
       opacity: 0.9;
-    }
-
-    /* شاشة اختيار السكن */
-    #skin-list {
-      display: flex;
-      flex-direction: row;
-      overflow-x: auto;
-      gap: 10px;
-      padding: 12px 4px;
-      margin-bottom: 12px;
-      width: 100%;
-    }
-
-    .skin-card {
-      min-width: 110px;
-      background: rgba(245, 228, 200, 0.95);
-      border-radius: 18px;
-      padding: 10px;
-      color: #2b2623;
-      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.35);
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 12px;
-    }
-
-    .skin-preview {
-      width: 56px;
-      height: 80px;
-      border-radius: 16px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      background: #f3dfc1;
-    }
-
-    .skin-preview-body {
-      width: 40px;
-      height: 55px;
-      border-radius: 14px;
-      background: #d3b791;
-      position: relative;
-    }
-
-    .skin-preview-head {
-      position: absolute;
-      top: -16px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: #c49160;
-    }
-
-    .skin-preview-logo {
-      position: absolute;
-      bottom: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 32px;
-      height: 10px;
-      border-radius: 9px;
-      background: rgba(0, 0, 0, 0.8);
-    }
-
-    .skin-name {
-      font-weight: 600;
-      margin-bottom: 3px;
-    }
-
-    .skin-note {
-      font-size: 10px;
-      opacity: 0.8;
-      margin-bottom: 4px;
-    }
-
-    .skin-select-btn {
-      border-radius: 999px;
-      border: none;
-      padding: 5px 10px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      background: #2b2623;
-      color: #f5e4c8;
-    }
-
-    .skin-select-btn.selected {
-      background: #b68540;
-      color: #fff7e9;
     }
 
     /* HUD أثناء اللعب */
@@ -236,7 +134,7 @@
       transform: translateX(-50%);
       font-size: 11px;
       color: #3a332e;
-      background: rgba(245, 228, 200, 0.85);
+      background: rgba(245, 228, 200, 0.9);
       padding: 4px 10px;
       border-radius: 999px;
       pointer-events: none;
@@ -248,7 +146,7 @@
       bottom: 40px;
       left: 26px;
       width: 90px;
-      opacity: 0.9;
+      opacity: 0.95;
     }
   </style>
 </head>
@@ -261,39 +159,22 @@
       <div id="scoreLabel">Score: 0</div>
       <div id="bestLabel">Best: 0</div>
     </div>
-    <div id="hint" style="display:none;">اضغط على الشاشة للقفز (مرة ثانية للقفزة الثانية)</div>
+    <div id="hint" style="display:none;">اضغط على الشاشة للقفز (مرة ثانية لقفزة ثانية)</div>
 
     <!-- شاشة البداية -->
     <div id="startScreen" class="screen visible">
       <img id="logoMain" src="LOGO.PNG" alt="Talgema Logo" />
       <div class="title-en-small">TALGEMA RUN</div>
-      <div class="subtitle">
-        لعبة خفيفة تلهيك عن انتظار الفطاير والكرك في تلقيمة.
-      </div>
       <button id="startBtn" class="btn">START</button>
       <div class="score-box">
         BEST SCORE: <span id="startBestScore">0</span>
       </div>
     </div>
 
-    <!-- شاشة اختيار السكن -->
-    <div id="skinScreen" class="screen">
-      <div class="title-en-small">CHOOSE YOUR BAKER</div>
-      <div class="subtitle">
-        اختر شخصية العامل قبل أن تبدأ الجري في مخبز تلقيمة.
-      </div>
-      <div id="skin-list"></div>
-      <button id="skinPlayBtn" class="btn">START RUN</button>
-      <button id="skinBackBtn" class="btn btn-secondary">رجوع</button>
-    </div>
-
     <!-- شاشة النتيجة -->
     <div id="gameOverScreen" class="screen">
       <div class="title-en-small">ORDER ALMOST READY</div>
-      <div class="subtitle">
-        انتهى الجري، لكن الفطور على وشك أن يجهز. العب جولة جديدة وأكسر الرقم.
-      </div>
-      <div class="score-box">
+      <div class="score-box" style="margin-bottom:14px;">
         نتيجتك: <span id="finalScore">0</span><br/>
         أفضل نتيجة: <span id="finalBestScore">0</span>
       </div>
@@ -304,14 +185,19 @@
   </div>
 
   <script>
-    // ===================== إعداد الكانفس =====================
+    // ===================== إعداد الكانفس بدقة عالية =====================
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
     const GAME_WIDTH = 360;
     const GAME_HEIGHT = 640;
-    canvas.width = GAME_WIDTH;
-    canvas.height = GAME_HEIGHT;
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = GAME_WIDTH * dpr;
+    canvas.height = GAME_HEIGHT * dpr;
+    canvas.style.width = GAME_WIDTH + "px";
+    canvas.style.height = GAME_HEIGHT + "px";
+    ctx.scale(dpr, dpr);
 
     // ===================== تحميل الصور =====================
     const bakerImg = new Image();
@@ -319,20 +205,19 @@
     let bakerLoaded = false;
     bakerImg.onload = () => bakerLoaded = true;
 
-    const fatayerImg = new Image();
-    fatayerImg.src = "FATAYER.jpg";
-
     const karakImg = new Image();
-    karakImg.src = "KARAK.jpg";
+    karakImg.src = "KARAK.PNG";
+    let karakLoaded = false;
+    karakImg.onload = () => karakLoaded = true;
+
+    const fatayerImg = new Image();
+    fatayerImg.src = "fatayer.jpg";
 
     // ===================== عناصر الواجهة =====================
     const wrapper = document.getElementById("game-wrapper");
     const startScreen = document.getElementById("startScreen");
-    const skinScreen = document.getElementById("skinScreen");
     const gameOverScreen = document.getElementById("gameOverScreen");
     const startBtn = document.getElementById("startBtn");
-    const skinPlayBtn = document.getElementById("skinPlayBtn");
-    const skinBackBtn = document.getElementById("skinBackBtn");
     const retryBtn = document.getElementById("retryBtn");
     const homeBtn = document.getElementById("homeBtn");
     const hud = document.getElementById("hud");
@@ -342,11 +227,9 @@
     const startBestScoreLabel = document.getElementById("startBestScore");
     const finalScoreLabel = document.getElementById("finalScore");
     const finalBestScoreLabel = document.getElementById("finalBestScore");
-    const skinList = document.getElementById("skin-list");
 
     // ===================== حالة اللعبة =====================
     const STATE_MENU = "menu";
-    const STATE_SKIN = "skin";
     const STATE_PLAYING = "playing";
     const STATE_GAMEOVER = "gameover";
     let gameState = STATE_MENU;
@@ -355,69 +238,6 @@
     let score = 0;
     const BEST_KEY = "talgema_run_best_score";
     let bestScore = parseInt(localStorage.getItem(BEST_KEY) || "0", 10);
-
-    // ===================== السكنات (أسماء فقط الآن) =====================
-    const skins = [
-      { id: "classic",  name: "Classic Baker",  note: "البدلة الكلاسيكية لتلقيمة." },
-      { id: "karak",    name: "Karak Master",  note: "الخباز العاشق للكرك." },
-      { id: "flame",    name: "Oven Flame",    note: "في قلب حرارة الفرن." },
-      { id: "midnight", name: "Midnight Baker",note: "مزاج الفجر والهدوء." },
-      { id: "golden",   name: "Golden Talgema",note: "سكن مميز لعيون الضيوف." }
-    ];
-    let selectedSkinId = "classic";
-
-    function buildSkinCards() {
-      skinList.innerHTML = "";
-      skins.forEach((skin) => {
-        const card = document.createElement("div");
-        card.className = "skin-card";
-
-        const preview = document.createElement("div");
-        preview.className = "skin-preview";
-        const body = document.createElement("div");
-        body.className = "skin-preview-body";
-        const head = document.createElement("div");
-        head.className = "skin-preview-head";
-        const logo = document.createElement("div");
-        logo.className = "skin-preview-logo";
-        preview.appendChild(body);
-        preview.appendChild(head);
-        preview.appendChild(logo);
-
-        const name = document.createElement("div");
-        name.className = "skin-name";
-        name.textContent = skin.name;
-
-        const note = document.createElement("div");
-        note.className = "skin-note";
-        note.textContent = skin.note;
-
-        const btn = document.createElement("button");
-        btn.className = "skin-select-btn";
-        btn.textContent = "اختر";
-
-        if (skin.id === selectedSkinId) {
-          btn.classList.add("selected");
-          btn.textContent = "مختار";
-        }
-
-        btn.addEventListener("click", () => {
-          selectedSkinId = skin.id;
-          document.querySelectorAll(".skin-select-btn").forEach((b) => {
-            b.classList.remove("selected");
-            b.textContent = "اختر";
-          });
-          btn.classList.add("selected");
-          btn.textContent = "مختار";
-        });
-
-        card.appendChild(preview);
-        card.appendChild(name);
-        card.appendChild(note);
-        card.appendChild(btn);
-        skinList.appendChild(card);
-      });
-    }
 
     // ===================== اللاعب والعناصر =====================
     const groundY = GAME_HEIGHT - 120;
@@ -445,55 +265,55 @@
 
     let lastFrameTime = performance.now();
 
-    // ===================== التحكم =====================
-    function handleInput() {
+    // ===================== الإدخال (القفز) =====================
+    function jump() {
       if (gameState !== STATE_PLAYING) return;
 
       if (player.onGround) {
-        // قفزة أولى
         player.vy = jumpVelocity;
         player.onGround = false;
         player.canDoubleJump = true;
       } else if (player.canDoubleJump) {
-        // قفزة ثانية (مهما كان الوقت بين الضغطات)
         player.vy = jumpVelocity;
         player.canDoubleJump = false;
       }
     }
 
-    canvas.addEventListener("touchstart", (e) => {
+    function onPointerDown(e) {
       e.preventDefault();
-      handleInput();
-    });
-    canvas.addEventListener("mousedown", (e) => {
-      e.preventDefault();
-      handleInput();
-    });
+      jump();
+    }
+
+    canvas.addEventListener("touchstart", onPointerDown, { passive: false });
+    canvas.addEventListener("mousedown", onPointerDown);
     wrapper.addEventListener("touchstart", (e) => {
       if (gameState === STATE_PLAYING) {
         e.preventDefault();
-        handleInput();
+        jump();
       }
+    }, { passive: false });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space") jump();
     });
 
     // ===================== دوال رسم =====================
     function drawBackground() {
-      // خلفية فاتحة بنصوص خفيفة مستوحاة من بوستر الفطاير
       ctx.fillStyle = "#f3e0c3";
       ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-      // صورة الفطاير لو موجودة
+      // بوستر الفطاير بخفة في الخلفية
       if (fatayerImg.complete && fatayerImg.naturalWidth > 0) {
         ctx.save();
         ctx.globalAlpha = 0.18;
         const scale = GAME_WIDTH / fatayerImg.width;
         const h = fatayerImg.height * scale;
-        ctx.drawImage(fatayerImg, 0, GAME_HEIGHT - h - 60, GAME_WIDTH, h);
+        ctx.drawImage(fatayerImg, 0, GAME_HEIGHT - h - 40, GAME_WIDTH, h);
         ctx.restore();
       }
 
-      // نصوص خلفية
-      ctx.fillStyle = "rgba(80,70,60,0.16)";
+      // نصوص كبيرة باهتة
+      ctx.fillStyle = "rgba(80,70,60,0.18)";
       ctx.font = "bold 54px 'Georgia', serif";
       ctx.fillText("TRADITION", -10, 120);
       ctx.fillText("WARMTH", 10, 220);
@@ -502,20 +322,10 @@
       // أرضية
       ctx.fillStyle = "#e1c296";
       ctx.fillRect(0, groundY, GAME_WIDTH, GAME_HEIGHT - groundY);
-
-      // لمسة كرك في الخلفية
-      if (karakImg.complete && karakImg.naturalWidth > 0) {
-        ctx.save();
-        ctx.globalAlpha = 0.26;
-        const w = 140;
-        const h = (karakImg.height / karakImg.width) * w;
-        ctx.drawImage(karakImg, GAME_WIDTH - w - 12, groundY - h - 30, w, h);
-        ctx.restore();
-      }
     }
 
     function drawPlayer() {
-      // ظل بسيط
+      // ظل
       ctx.fillStyle = "rgba(0,0,0,0.22)";
       ctx.beginPath();
       ctx.ellipse(
@@ -530,7 +340,7 @@
       ctx.fill();
 
       if (bakerLoaded) {
-        const spriteHeight = 160;
+        const spriteHeight = 190;
         const spriteWidth = spriteHeight * (bakerImg.width / bakerImg.height);
         const drawX = player.x - (spriteWidth - player.width) / 2;
         const drawY = groundY - spriteHeight;
@@ -565,20 +375,13 @@
     }
 
     function drawPickup(pk) {
-      const centerX = pk.x + pk.size / 2;
-      const centerY = pk.y + pk.size / 2;
-
-      if (pk.kind === "karak") {
-        ctx.fillStyle = "#f7f0e3";
-        roundRect(ctx, centerX - 10, centerY - 14, 20, 22, 4);
-        ctx.fill();
-
-        ctx.fillStyle = "#c58a4a";
-        ctx.fillRect(centerX - 8, centerY - 10, 16, 14);
-
-        ctx.fillStyle = "#b3956c";
-        ctx.fillRect(centerX - 6, centerY + 8, 12, 3);
+      const size = pk.size;
+      if (pk.kind === "karak" && karakLoaded) {
+        ctx.drawImage(karakImg, pk.x, pk.y, size, size);
       } else {
+        // فطيرة صغيرة
+        const centerX = pk.x + size / 2;
+        const centerY = pk.y + size / 2;
         ctx.fillStyle = "#f1d2a4";
         ctx.beginPath();
         ctx.ellipse(centerX, centerY, 15, 10, 0, 0, Math.PI * 2);
@@ -656,9 +459,9 @@
     }
 
     function spawnPickup(now) {
-      const kind = Math.random() < 0.5 ? "karak" : "fatayer";
-      const size = 26;
-      const y = groundY - 80 - Math.random() * 60;
+      const kind = Math.random() < 0.6 ? "karak" : "fatayer";
+      const size = 34;
+      const y = groundY - 90 - Math.random() * 60;
 
       const pk = {
         x: GAME_WIDTH + 20,
@@ -776,6 +579,7 @@
         update(dt, now);
         render();
       } else {
+        lastFrameTime = now;
         ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
         drawBackground();
         drawPlayer();
@@ -785,7 +589,7 @@
 
     // ===================== الشاشات =====================
     function showScreen(screen) {
-      [startScreen, skinScreen, gameOverScreen].forEach((s) =>
+      [startScreen, gameOverScreen].forEach((s) =>
         s.classList.remove("visible")
       );
       if (screen) screen.classList.add("visible");
@@ -801,13 +605,6 @@
       showScreen(startScreen);
       showHUD(false);
       startBestScoreLabel.textContent = bestScore;
-    }
-
-    function goToSkinSelect() {
-      gameState = STATE_SKIN;
-      buildSkinCards();
-      showScreen(skinScreen);
-      showHUD(false);
     }
 
     function startPlaying() {
@@ -827,9 +624,7 @@
     }
 
     // ===================== ربط الأزرار =====================
-    startBtn.addEventListener("click", goToSkinSelect);
-    skinBackBtn.addEventListener("click", goToMenu);
-    skinPlayBtn.addEventListener("click", startPlaying);
+    startBtn.addEventListener("click", startPlaying);
     retryBtn.addEventListener("click", startPlaying);
     homeBtn.addEventListener("click", goToMenu);
 
