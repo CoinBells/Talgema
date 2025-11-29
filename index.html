@@ -28,7 +28,7 @@
       width: 100%;
       max-width: 420px;
       aspect-ratio: 9 / 16;
-      background: #f5e4c8;
+      background: #000;
       border-radius: 24px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
       overflow: hidden;
@@ -39,7 +39,7 @@
       height: 100%;
       display: block;
       background: transparent;
-      touch-action: none; /* حتى لا يسكّر سكرول الصفحة مع اللمس */
+      touch-action: none; /* يمنع سكرول/زوم مع اللمس داخل اللعبة */
     }
 
     .screen {
@@ -51,8 +51,9 @@
       align-items: center;
       padding: 20px;
       text-align: center;
-      background: radial-gradient(circle at top, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.8));
+      background: radial-gradient(circle at top, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.75));
       color: #f7f0e3;
+      z-index: 3;
     }
     .screen.visible {
       display: flex;
@@ -124,19 +125,28 @@
       color: #2b2623;
       text-shadow: 0 1px 2px rgba(255,255,255,0.6);
       pointer-events: none;
+      z-index: 2;
     }
 
-    #hint {
+    /* رابط الانستقرام في أسفل الكرت */
+    #igFooter {
       position: absolute;
       bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 11px;
-      color: #3a332e;
-      background: rgba(245, 228, 200, 0.95);
-      padding: 4px 10px;
+      font-size: 12px;
+      color: #f5e4c8;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 4px 14px;
       border-radius: 999px;
-      pointer-events: none;
+      cursor: pointer;
+      z-index: 4;
+      letter-spacing: 1px;
+    }
+
+    #igFooter:active {
+      transform: translateX(-50%) scale(0.97);
+      background: rgba(0, 0, 0, 0.85);
     }
 
     /* صورة اللاعب في شاشة النتيجة */
@@ -159,7 +169,6 @@
       <div id="scoreLabel">Score: 0</div>
       <div id="bestLabel">Best: 0</div>
     </div>
-    <div id="hint" style="display:none;">اضغط على الشاشة للقفز (مرتين لقفزة مزدوجة)</div>
 
     <!-- شاشة البداية -->
     <div id="startScreen" class="screen visible">
@@ -182,6 +191,9 @@
       <button id="homeBtn" class="btn btn-secondary">الرجوع للرئيسية</button>
       <img id="bakerThumb" src="BAKER.PNG" alt="Baker" />
     </div>
+
+    <!-- رابط الانستقرام -->
+    <div id="igFooter">Talgema</div>
   </div>
 
   <script>
@@ -225,12 +237,19 @@
     const retryBtn = document.getElementById("retryBtn");
     const homeBtn = document.getElementById("homeBtn");
     const hud = document.getElementById("hud");
-    const hint = document.getElementById("hint");
     const scoreLabel = document.getElementById("scoreLabel");
     const bestLabel = document.getElementById("bestLabel");
     const startBestScoreLabel = document.getElementById("startBestScore");
     const finalScoreLabel = document.getElementById("finalScore");
     const finalBestScoreLabel = document.getElementById("finalBestScore");
+    const igFooter = document.getElementById("igFooter");
+
+    igFooter.addEventListener("click", () => {
+      window.open(
+        "https://www.instagram.com/talgema.kw?igsh=MWR3cmZiOWRkbWxybg==",
+        "_blank"
+      );
+    });
 
     // ============ حالة اللعبة ============
 
@@ -251,12 +270,11 @@
 
     const player = {
       x: 90,
-      y: groundY - 70,
-      width: 38,
-      height: 70,
+      y: groundY - 80,
+      width: 40,
+      height: 80,
       vy: 0,
-      onGround: true,
-      canDoubleJump: true
+      onGround: true
     };
 
     const gravity = 0.6;
@@ -268,22 +286,17 @@
     let lastSpawnObstacle = 0;
     let lastSpawnPickup = 0;
     let obstacleInterval = 1400;
-    let pickupInterval = 1000;
+    let pickupInterval = 1100;
 
     let lastFrameTime = performance.now();
 
-    // ============ إدخال (قفز) ============
+    // ============ إدخال (قفز ضغطة واحدة) ============
 
     function jump() {
       if (gameState !== STATE_PLAYING) return;
-
       if (player.onGround) {
         player.vy = jumpVelocity;
         player.onGround = false;
-        player.canDoubleJump = true;
-      } else if (player.canDoubleJump) {
-        player.vy = jumpVelocity;
-        player.canDoubleJump = false;
       }
     }
 
@@ -308,29 +321,36 @@
     // ============ رسم الخلفية ============
 
     function drawBackground() {
-      ctx.fillStyle = "#f3e0c3";
-      ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
-      // بوستر الفطاير بشكل باهت
+      // صورة الفطائر تغطي كامل الشاشة (cover)
       if (fatayerImg.complete && fatayerImg.naturalWidth > 0) {
-        ctx.save();
-        ctx.globalAlpha = 0.18;
-        const scale = GAME_WIDTH / fatayerImg.width;
-        const h = fatayerImg.height * scale;
-        ctx.drawImage(fatayerImg, 0, GAME_HEIGHT - h - 40, GAME_WIDTH, h);
-        ctx.restore();
+        const iw = fatayerImg.width;
+        const ih = fatayerImg.height;
+        const scale = Math.max(GAME_WIDTH / iw, GAME_HEIGHT / ih);
+        const w = iw * scale;
+        const h = ih * scale;
+        const x = (GAME_WIDTH - w) / 2;
+        const y = (GAME_HEIGHT - h) / 2;
+
+        ctx.drawImage(fatayerImg, x, y, w, h);
+      } else {
+        ctx.fillStyle = "#f3e0c3";
+        ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
       }
 
-      // نصوص كبيرة خفيفة
-      ctx.fillStyle = "rgba(80,70,60,0.18)";
-      ctx.font = "bold 54px 'Georgia', serif";
-      ctx.fillText("TRADITION", -10, 120);
-      ctx.fillText("WARMTH", 10, 220);
-      ctx.fillText("MEMORIES", -20, 320);
+      // طبقة تدرّج خفيفة لتوضيح النصوص واللاعب
+      const grad = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
+      grad.addColorStop(0, "rgba(243, 224, 195, 0.65)");
+      grad.addColorStop(0.6, "rgba(243, 224, 195, 0.4)");
+      grad.addColorStop(1, "rgba(243, 224, 195, 0.9)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-      // أرضية
+      // أرضية شبه شفافة فوق الخلفية
+      ctx.save();
+      ctx.globalAlpha = 0.9;
       ctx.fillStyle = "#e1c296";
       ctx.fillRect(0, groundY, GAME_WIDTH, GAME_HEIGHT - groundY);
+      ctx.restore();
     }
 
     // ============ رسم اللاعب ============
@@ -342,15 +362,15 @@
       ctx.ellipse(
         player.x + player.width / 2,
         groundY + 4,
-        18,
-        6,
+        20,
+        7,
         0,
         0,
         Math.PI * 2
       );
       ctx.fill();
 
-      const feetY = player.y + player.height; // موضع القدم حسب القفز
+      const feetY = player.y + player.height;
 
       if (bakerLoaded) {
         const spriteHeight = 190;
@@ -380,24 +400,24 @@
 
     function drawObstacle(ob) {
       ctx.fillStyle = ob.color;
-      roundRect(ctx, ob.x, ob.y, ob.width, ob.height, 8);
+      roundRect(ctx, ob.x, ob.y, ob.width, ob.height, 10);
       ctx.fill();
 
       ctx.fillStyle = "rgba(0,0,0,0.15)";
       if (ob.type === "tray") {
-        ctx.fillRect(ob.x + 6, ob.y + 6, ob.width - 12, 6);
+        ctx.fillRect(ob.x + 8, ob.y + 8, ob.width - 16, 7);
       } else if (ob.type === "olive") {
         ctx.beginPath();
         ctx.arc(
           ob.x + ob.width / 2,
           ob.y + ob.height / 2,
-          ob.width / 2.4,
+          ob.width / 2.3,
           0,
           Math.PI * 2
         );
         ctx.fill();
       } else if (ob.type === "flour") {
-        ctx.fillRect(ob.x + 4, ob.y + 4, ob.width - 8, ob.height - 10);
+        ctx.fillRect(ob.x + 6, ob.y + 6, ob.width - 12, ob.height - 14);
       }
     }
 
@@ -418,7 +438,7 @@
         // فطيرة صغيرة
         ctx.fillStyle = "#f1d2a4";
         ctx.beginPath();
-        ctx.ellipse(centerX, centerY, 15, 10, 0, 0, Math.PI * 2);
+        ctx.ellipse(centerX, centerY, 16, 11, 0, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.fillStyle = "#d08b3f";
@@ -433,10 +453,9 @@
     function resetGame() {
       score = 0;
       player.x = 90;
-      player.y = groundY - 70;
+      player.y = groundY - player.height;
       player.vy = 0;
       player.onGround = true;
-      player.canDoubleJump = true;
 
       obstacles.length = 0;
       pickups.length = 0;
@@ -444,7 +463,7 @@
       lastSpawnObstacle = 0;
       lastSpawnPickup = 0;
       obstacleInterval = 1400;
-      pickupInterval = 1000;
+      pickupInterval = 1100;
 
       lastFrameTime = performance.now();
       scoreLabel.textContent = "Score: 0";
@@ -454,19 +473,19 @@
     function spawnObstacle(now) {
       const typeRoll = Math.random();
       let type = "tray";
-      let width = 55;
-      let height = 35;
+      let width = 72;
+      let height = 44;
       let color = "#b27d51";
 
       if (typeRoll < 0.33) {
         type = "olive";
-        width = 30;
-        height = 30;
+        width = 42;
+        height = 42;
         color = "#8a9c4a";
       } else if (typeRoll < 0.66) {
         type = "flour";
-        width = 46;
-        height = 40;
+        width = 60;
+        height = 50;
         color = "#d2c6b3";
       }
 
@@ -475,7 +494,7 @@
         y: groundY - height,
         width,
         height,
-        speed: 4.2,
+        speed: 4.3,
         type,
         color
       };
@@ -485,14 +504,14 @@
 
     function spawnPickup(now) {
       const kind = Math.random() < 0.8 ? "karak" : "fatayer"; // أغلب الوقت كرك
-      const size = 44;
-      const y = groundY - 90 - Math.random() * 60;
+      const size = 50;
+      const y = groundY - 110 - Math.random() * 60;
 
       const pk = {
         x: GAME_WIDTH + 20,
         y,
         size,
-        speed: 4.2,
+        speed: 4.3,
         kind
       };
       pickups.push(pk);
@@ -518,19 +537,18 @@
         player.vy = 0;
         if (!player.onGround) {
           player.onGround = true;
-          player.canDoubleJump = true;
         }
       }
 
       // توليد العوائق والـ pickups
       if (now - lastSpawnObstacle > obstacleInterval) {
         spawnObstacle(now);
-        if (obstacleInterval > 900) obstacleInterval -= 20;
+        if (obstacleInterval > 950) obstacleInterval -= 20;
       }
 
       if (now - lastSpawnPickup > pickupInterval) {
         spawnPickup(now);
-        if (pickupInterval > 700) pickupInterval -= 10;
+        if (pickupInterval > 800) pickupInterval -= 15;
       }
 
       // تحريك العوائق
@@ -629,7 +647,6 @@
 
     function showHUD(show) {
       hud.style.display = show ? "flex" : "none";
-      hint.style.display = show ? "block" : "none";
     }
 
     function goToMenu() {
